@@ -1,0 +1,20 @@
+
+<nav style="background-color: #f0f0f0; padding:10px;">
+    <span>Bem vindo, {{ session['nome'] }} | Função: {{ session['tipo'] }}</span><br>
+
+    {% if session['tipo'] == 'escritorio' %}
+        <a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a> |
+        <a href="{{ url_for('obras.obras') }}">Cadastrar Obras</a> |
+        <a href="{{ url_for('dashboard.dashboard_escritorio') }}">Instalações</a> |
+        <a href="{{ url_for('usuarios.cadastrar_usuario') }}">Cadastrar Usuário</a> |
+        <a href="{{ url_for('clientes.cadastrar_cliente') }}">Cadastrar Cliente</a> |
+        <a href="{{ url_for('contratos.cadastrar_contrato') }}">Cadastrar Contrato</a> |
+        <a href="{{ url_for('catalogo.cadastrar_modelo_ar') }}">Cadastrar modelo</a> |
+        <a href="{{ url_for('cad_contratos.cad_contratos', contrato_id=1) }}">teste contrato</a> |
+    {% elif session['tipo'] == 'instalador' %}
+        <a href="{{ url_for('dashboard.dashboard_instalador') }}">Minhas Instalações</a> |
+        <a href="{{ url_for('instalacoes.nova_instalacao') }}">Nova Instalação</a> |
+    {% endif %}
+
+    <a href="{{ url_for('auth.logout') }}">Sair</a>
+</nav>

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title%}Dashboard Admin{% endblock %} 
+{% block content %}
+
+<body>
+    <h1>Bem vindo ao Painel Admin</h1>
+    <h2>Contratos em Aberto</h2>
+    <ul>
+        {% for contrato in contratos_abertos %}
+            <li>
+                <strong>Número</strong> {{ contrato.numero_contrato }} |
+                <strong>Cliente</strong> {{ contrato.cliente }} |
+                <strong>Vigência</strong> {{ contrato.data_inicio }} até {{ contrato.data_fim }} |
+                <strong>Valor</strong> {{ contrato.valor }}
+            </li>
+        {% else %}
+            <li>Nenhum contrato em aberto</li>
+        {% endfor %}
+
+    </ul>
+    <h2>Obras em Aberto</h2>
+    <ul>
+        {% for obra in obras_abertas %}
+            <li>
+                <strong>Nome</strong> {{ obra.nome }} |
+                <strong>Cidade</strong> {{ obra.cidade }} - {{ obra.estado }}
+            </li>
+        {% else %}
+            <li>
+                Nenhum obra em aberto
+            </li>
+        {% endfor %}
+
+    </ul>
+    <h2>Resumo dos instaladores</h2>
+    <table border="1">
+        <tr>
+            <th>Nome</th>
+            <th>Hoje</th>
+            <th>Semana</th>
+            <th>Mês</th>
+        </tr>
+        {% for r in resumo_instaladores %}
+        <tr>
+            <td>{{ r.nome }}</td>
+            <td>{{ r.hoje }}</td>
+            <td>{{ r.semana }}</td>
+            <td>{{ r.mes }}</td>
+
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4">Nenhum dado de instalação encontrado.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+{% endblock %}

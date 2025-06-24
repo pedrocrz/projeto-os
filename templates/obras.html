@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title%}Dashboard Admin{% endblock %} 
+{% block content %}
+
+<body>
+    <h2>Nova Obra</h2>
+    <form method="POST">
+        <label>Nome</label><br>
+        <input type="text" name="nome" required><br>
+
+        <label>Endereco:</label><br>
+        <input type="text" name="endereco" required><br>
+
+        <label>Cidade</label><br>
+        <input type="text" name="cidade" required><br>
+
+        <label>Estado</label><br>
+        <input type="text" name="estado" maxlength="2" required><br>
+        
+        <label>Contrato</label><br>
+        <select name="contrato_id" required onchange="this.form.submit()">
+            <option value="">Selecione um contrato</option>
+            {% for contrato in contratos %}
+                <option value="{{ contrato.id }}" {% if contrato.id == contrato_selecionado %}selected{% endif %}>
+                    {{ contrato.numero_contrato }}
+                </option>
+            {% endfor %}
+        </select><br>
+
+        {% if modelos_contrato %}
+            <h3>Modelos do Contrato</h3>
+            {% for modelo in modelos_contrato %}
+                <div>
+                    <label>
+                        <input type="checkbox" name="modelo_ids[]" value="{{ modelo.modelo_id }}">
+                        {{ modelo.fabricante }} - {{ modelo.nome_marca }} - {{ modelo.capacidade_btu }}
+                    </label>
+                    <input type="number" name="quantidade_{{ modelo.modelo_id }}" placeholder="Quantidade para esta obra">
+
+                </div>
+            {% endfor %}
+        {% endif %}
+        <br>
+        
+
+    <hr>
+    <label for="instaladores">Selecione os Instaladores Responsáveis:</label><br>
+    <select name="instaladores" multiple class="form-control">
+        {% for instalador in instaladores %}
+            <option value="{{ instalador.id }}">{{ instalador.nome }}</option>
+        {% endfor %}
+    </select><br>
+    <small>Segure CTRL (ou Command) para selecionar mais de um.</small>
+    <br><br>
+    
+    <h2>Obras Cadastradas</h2>
+    <ul>
+        {% for obra in obras %}
+            <li>{{ obra.nome }} - {{ obra.cidade }}/{{ obra.estado }}</li>
+        {% endfor %}
+        
+    </ul>
+    <input type="submit" value="Cadastrar">
+     </form>
+</body>
+{% endblock %}

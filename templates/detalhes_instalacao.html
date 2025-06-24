@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title%}Dashboard Admin{% endblock %} 
+{% block content %}
+
+<body>
+    <h2>Detalhes da Instalação</h2>
+    <h3>Enviar Fotos</h3>
+    <form action="{{ url_for('instalacoes.upload_foto') }}" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="instalacao_id" value="{{ instalacao_id }}">
+        <input type="file" name="foto">
+        <button type="submit">Enviar</button>
+    </form>
+    <h3>Checklist</h3>
+    <form action="{{ url_for('instalacoes.salvar_cheklist') }}" method="POST">
+        <input type="hidden" name="instalacao_id" value="{{ instalacao_id }}">
+
+        {% for item in checklist %}
+            <label>
+                <input type="checkbox" name="itens" value="{{ item.item }}" {% if item.marcado%}checked{% endif %}>
+                {{ item.item }}
+            </label><br>
+        {% endfor %}
+        
+        <br>
+        Observações: <br>
+        <textarea name="observacoes">{{ observacoes }}</textarea><br><br>
+        <button type="submit">Salvar</button>
+    </form>
+    <h3>Fotos</h3>
+    {% for foto in fotos %}
+        <img src="{{ url_for('static', filename='uploads/' + foto.caminho) }}" width="200">
+    {% endfor %}
+    
+</body>
+{% endblock %}

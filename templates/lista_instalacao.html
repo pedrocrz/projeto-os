@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title%}Dashboard Admin{% endblock %} 
+{% block content %}
+
+<body>
+    <h1> Minhas Instalações</h1>
+    <table>
+        <tr>
+            <th>obra</th>
+            <th>Data</th>
+            <th>Ações</th>
+
+        </tr>
+        {% for instalacao in instalacoes %}
+        <tr>
+            <td>{{ instalacao.obra_nome }}</td>
+            <td>{{ instalacao.data }}</td>
+            <td>
+                <a href="{{ url_for('detalhes_instalacao', id=instalacao.id) }}">Ver Detalhes</a>
+
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+{% endblock %}

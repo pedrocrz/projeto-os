@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title%}Dashboard Admin{% endblock %} 
+{% block content %}
+
+<body>
+    <h1>Teste Instalador</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class="flash-messages">
+            {% for message in messages %}
+            <li style="color: green;">{{message}}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+</body>
+{% endblock %}

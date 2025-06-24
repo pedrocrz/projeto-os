@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title%}Dashboard Admin{% endblock %} 
+{% block content %}
+
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-success mt-2">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container mt-4">
+        <h2>Cadastrar Clientes</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label for="nome">Nome do Cliente</label>
+                <input type="text" class="form-control" name="nome" required>
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="cnpj">CNPJ</label>
+                <input type="text" class="form-control" name="cnpj" required>
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="endereco">Endereço</label>
+                <textarea class="form-control" name="endereco" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Cadastrar Cliente</button>
+        </form>
+    </div>
+    
+</body>
+{% endblock %}

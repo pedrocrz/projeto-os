@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title%}Cadastrar Contrato{% endblock %} 
+{% block content %}
+<body>
+   
+
+    <h2>Cadastrar Contrato</h2>
+
+
+    <form method="POST">
+        <label for="cliente_id">Cliente:</label>
+        <select name="cliente_id" required>
+            {% for cliente in clientes %}
+                <option value="{{ cliente.id }}"> {{ cliente.nome }}</option><br>
+            {% endfor %}
+        </select>
+
+        <br><br><label for="numero_contrato">Número do Contrato:</label>
+        <input type="text" name="numero_contrato" required>
+            <br><br>
+        <label for="data_inicio">Data de Início</label>
+        <input type="date" name="data_inicio" required>
+            <br><br>
+        <label for="data_fim">Data Final</label>
+        <input type="date" name="data_fim" required>
+            <br><br>
+        <label for="valor">Valor Total</label>
+        <input type="number" step="0.01" name="valor" required>
+            <br><br>
+
+
+
+    <h3>Modelos Relacionados ao Contrato</h3>
+    {% for modelo in modelos %}
+        <div>
+            <label>
+                <input type="checkbox" name="modelo_ids" value="{{ modelo.id}}">
+                {{ modelo.nome_marca }} - {{ modelo.fabricante }} - {{ modelo.capacidade_btu }}
+            </label>
+           <input type="number" name="quantidade_{{ modelo.id}}" placeholder="quantidade">
+
+        </div>
+    {% endfor %}
+    
+        <button type="submit">Cadastrar Contrato</button>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alet alert-success mt-2">
+                {% for message in messages %}
+                <p{{ message }}></p>
+                {% endfor %}
+
+            </div>
+        {% endif %}
+    {% endwith %}
+    </form>
+
+
+</body>
+{% endblock %}

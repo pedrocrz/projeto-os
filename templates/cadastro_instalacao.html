@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title%}Dashboard Admin{% endblock %} 
+{% block content %}
+
+<body>
+    <h2>Nova Instalação</h2>
+    <form method="POST" action="{{url_for ('instalacoes.nova_instalacao') }}" enctype="multipart/form-data">
+        <label>Obra:</label>
+        <select name="obra_id" required>
+            {% for obra in obras %}
+                <option value="{{ obra.id }}">{{ obra.nome}} - {{ obra.cidade }}</option>
+            {% endfor %}
+        </select><br><br>
+        <label>Observações</label><br>
+        <textarea name="observacoes" rows="4" cols="40"></textarea><br><br>
+
+        <label>Checklist</label><br>
+        <input type="checkbox" name="checklist[]" value="Evap e cond instalado"> Evaporadora e Condensadora instalado <br>
+        <input type="checkbox" name="checklist[]" values="Fiação concluida">Elétrica Concluida <br>
+        <input type="checkbox" name="checklist[]" values="Testes realizados">Testes realizados <br>
+
+        <label>Fotos da instalação</label>
+        <input type="file" name="foto"><br><br>
+
+        <label for="metragem">Selecione a metragem de tubulação</label>
+
+        <select name="metragem" id="metragem">
+            {% for i in range(0,101) %}
+                {% set metro = '%.2f' % (i* 0.25) %}
+                <option value="{{ metro }}" {% if metro == metragem | string %}selected{% endif %}>{{ metro}} Metros</option>
+            {% endfor %}
+        </select><br><br>
+        <button type="submit">Cadastrar Instalação</button>
+    </form>
+    <br>
+    <a href="{{ url_for('dashboard.dashboard') }}">Voltar</a>
+</body>
+
+{% endblock %}

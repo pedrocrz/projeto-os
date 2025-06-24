@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title%}Lista de aparelhos{% endblock %}
+{% block content %}
+
+<h2>Catálogo de modelos de Ar condicionado</h2>
+<a href="{{ url_for('catalogo.cadastrar_modelo_ar') }}">Cadastrar Novo Modelo</a>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome/Marca</th>
+            <th>Fabricante</th>
+            <th>Capacidade BTU's</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for modelo in modelos %}
+        <tr>
+            <td>{{ modelo['id'] }}</td>
+            <td>{{ modelo['nome_marca'] }}</td>
+            <td>{{ modelo['fabricante'] }}</td>
+            <td>{{ modelo['capacidade_btu'] }}</td>
+       
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+
+{% endblock %}

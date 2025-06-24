@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title%}Cadastrar Contrato{% endblock %} 
+{% block content %}
+
+<h2>Cadastro de Contrato</h2>
+
+<form method="POST">
+    <input type="hidden" name="total_enderecos" id="total_enderecos" id="1">
+
+    <div id="enderecos_container">
+        <div class="endereco" data-index="0">
+            <h4>Endereço 1</h4>
+            <label>Cidade:</label>
+            <input type="text" name="endereco_0_cidade" required><br>
+            
+            <label>Endereço:</label>
+            <input type="text" name="endereco_0_logradouro" required><br><br>
+
+            <h5>Modelos de Ar condicionado</h5>
+            {% for modelo in modelos %}
+                <label>
+                    {{ modelo.fabricante }} - {{ modelo.nome_marca }} - {{ capacidade_btu }} BTUs
+                    <input type="number" name="endereco_0_quantidade_{{ modelo.id }}" placeholder="Qtd">
+
+                </label><br>
+            {% endfor %}
+
+            <h5>Instaladores</h5>
+            {% for instalador in instaladores %}
+                <label>
+                    <input type="checkbox" name="endereco_0_instaladores" value="{{ instalador.id }}">
+                    {{ instalador.nome }}
+                </label><br>
+            {% endfor %}
+            <hr>
+
+        </div>
+    </div>
+    <button type="button" onclick="adicionarEndereco()">+ Adicionado Outro endereço</button><br><br>
+    <button type="submit">Salvar Endereços</button>
+</form>
+
+<script>
+let index = 1;
+
+function adicionarEndereco() {
+    const container = document.getElementById('enderecoes_container');
+    const novo = document.querySelector('.endereco').cloneNode(true);
+    novo.dataset.index = index;
+    novo.innerHTML = novo.innerHTML.replaceAll(/endereco_0/g, `endereco_${index}_`);
+    novo.querySelector('h4').textContent = `Endereco ${index + 1}`;
+    container.appendChild(novo);
+    document.getElementById('total_enderecos').value = index + 1;
+    index++;
+
+}
+</script>
+{% endblock %}
