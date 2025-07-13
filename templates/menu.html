@@ -10,10 +10,11 @@
         <a href="{{ url_for('clientes.cadastrar_cliente') }}">Cadastrar Cliente</a> |
         <a href="{{ url_for('contratos.cadastrar_contrato') }}">Cadastrar Contrato</a> |
         <a href="{{ url_for('catalogo.cadastrar_modelo_ar') }}">Cadastrar modelo</a> |
-        <a href="{{ url_for('cad_contratos.cad_contratos', contrato_id=1) }}">teste contrato</a> |
+        <a href="{{ url_for('contratos.listar_contratos')}}">Listar Contratos</a> |
+        <a href="{{ url_for('dashboard.painel_escritorio') }}">Painel</a> |
     {% elif session['tipo'] == 'instalador' %}
         <a href="{{ url_for('dashboard.dashboard_instalador') }}">Minhas Instalações</a> |
-        <a href="{{ url_for('instalacoes.nova_instalacao') }}">Nova Instalação</a> |
+        <a href="{{ url_for('instalacoes.obras_instalador') }}">Nova Instalação</a> |
     {% endif %}
 
     <a href="{{ url_for('auth.logout') }}">Sair</a>

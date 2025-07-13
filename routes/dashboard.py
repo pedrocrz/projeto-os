@@ -75,3 +75,40 @@ def dashboard_instalador():
     conn.close()
 
     return render_template('dashboard_instalador.html', instalacoes=instalacoes)
+
+@dashboard_bp.route('/painel')
+def painel_escritorio():
+    if 'usuario_id' not in session or session['tipo'] != 'escritorio':
+        return redirect(url_for('auth.login'))
+    
+    conn = conectar()
+    with conn.cursor() as cursor:
+        # indicariores rápidos
+        cursor.execute('SELECT COUNT(*) AS contratos FROM contratos')
+        total_contratos = cursor.fetchone()['contratos']
+
+        cursor.execute('SELECT COUNT(*) AS obras FROM obras')
+        total_obras = cursor.fetchone()['obras']
+
+        cursor.execute('SELECT COUNT(*) AS instalacoes FROM instalacoes')
+        total_inst = cursor.fetchone()['instalacoes']
+
+        # resumo por contrato
+        cursor.execute('''
+            SELECT c.id, c.numero_contrato,
+                       COUNT(DISTINCT o.id) AS obras,
+                       COUNT(i.id) AS instalacoes
+            FROM contratos c
+            LEFT JOIN obras o ON o.contrato_id = c.id
+            LEFT JOIN instalacoes i ON i.obra_id = o.id
+            GROUP BY c.id
+            ORDER BY c.id DESC
+                       ''')
+        resumo = cursor.fetchall()
+    conn.close()
+    
+    return render_template('painel_escritorio.html',
+                            total_contratos=total_contratos,
+                            total_obras=total_obras,
+                            total_inst=total_inst,
+                            resumo=resumo)

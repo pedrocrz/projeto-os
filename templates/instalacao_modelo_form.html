@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title%}Registrar Instalação{% endblock %} 
+{% block content %}
+<h2>Instalar Aparelho - {{ modelo.fabricante }} - {{ modelo.nome_marca }} - {{ modelo.capacidade_btu }} </h2>
+
+<form method="POST" enctype="multipart/form-data">
+
+    
+
+    <label>Checklist</label><br>
+    <input type="checkbox" name="checklist[]" value="Evaporadora instalada"> Evaporadora instalada <br>
+    <input type="checkbox" name="checklist[]" value="Condensadora instalada"> Condensadora Instalada <br>
+    <input type="checkbox" name="checklist[]" value="Fiação concluida">Elétrica finalizada <br>
+    <input type="checkbox" name="checklist[]" value="Testes realizados">Testes realizados <br>
+    
+    <label for="metragem_linha">Metragem Tubos:</label>
+    <input type="number" step="0.1" name="metragem_linha" required><br>
+
+    <label for="metragem_dreno">Metragem Dreno:</label>
+    <input type="number" step="0.1" name="metragem_dreno" required> <br>
+
+    <label for="metragem_eletrica">Metragem Elétrica</label>
+    <input type="number" step="0.1" name="metragem_eletrica"> <br>
+    
+    <h3>Adicionar Fotos</h3>
+
+
+    </select><br>
+    <label>Foto da Instalação</label><br><br>
+    {% set tipos_foto =[
+        'Etiqueta Evaporadora',
+        'Etiqueta Condensadora',
+        'Controle Remoto',
+        'Tubulação',
+        'Outras'
+    ] %}
+    {% for tipo in tipos_foto %}
+        <label>{{ tipo }}</label>
+        <input type="file" name="fotos_{{ loop.index }}"><br>
+        <input type="hidden" name="foto_tipo_{{ loop.index }}" value="{{ tipo }}"><br>
+    {% endfor %}
+
+
+    <label>Observações</label><br>
+    <textarea name="observacoes" rows="4" cols="40"></textarea><br>
+
+    <button type="submit">Salvar Instalação</button>
+</form>
+<br><br>
+<a href="{{ url_for('instalacoes.modelos_da_obra', obra_id=obra_id) }}">Voltar</a>
+
+
+{% endblock %}

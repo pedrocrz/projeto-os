@@ -1,0 +1,7 @@
+body {
+    background-color: #a2b6bb; /* Altere para a cor desejada */
+    /* Ou use uma imagem de fundo: */
+    /* background-image: url('/static/imagem.jpg'); */
+    /* background-size: cover; */
+    /* background-repeat: no-repeat; */
+}

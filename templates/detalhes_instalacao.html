@@ -2,34 +2,53 @@
 {% block title%}Dashboard Admin{% endblock %} 
 {% block content %}
 
-<body>
-    <h2>Detalhes da Instalação</h2>
-    <h3>Enviar Fotos</h3>
-    <form action="{{ url_for('instalacoes.upload_foto') }}" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="instalacao_id" value="{{ instalacao_id }}">
-        <input type="file" name="foto">
-        <button type="submit">Enviar</button>
-    </form>
-    <h3>Checklist</h3>
-    <form action="{{ url_for('instalacoes.salvar_cheklist') }}" method="POST">
-        <input type="hidden" name="instalacao_id" value="{{ instalacao_id }}">
+<h2>Detalhes da Instalação</h2>
 
-        {% for item in checklist %}
-            <label>
-                <input type="checkbox" name="itens" value="{{ item.item }}" {% if item.marcado%}checked{% endif %}>
-                {{ item.item }}
-            </label><br>
+<h3>Obra: {{ dados_obra.nome_obra }}</h3>
+<p><strong>Endereço: </strong>{{ dados_obra.endereco }}, {{ dados_obra.cidade }} - {{ dados.obra.estado }}</p>
+<p><strong>Data: </strong>{{ dados_obra.data_obra.strftime('%d/%m/%Y %H:%M') }}</p>
+<h3>checklist</h3>
+<ul>
+    {% for item in checklist %}
+        <li>
+            {{ '✅' if item.marcado else '❌' }} {{ item. item }}
+        </li>
+    {% endifor %}
+</ul>
+<hr>
+
+<h3>Observações</h3>
+<p>{{ observacoes or 'Nenhuma observação registrada.' }}</p>
+
+<h3>Metragem</h3>
+<p>{{ dados_obra.metragem or 'Não informada.' }} m</p>
+
+
+<hr>
+
+<h3>Fotos da Instalação</h3>
+{% if fotos %}
+    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+        {% for foto in fotos %}
+            <div style="text-align: center;">
+                <img src="{{ url_for('static', filename='uploads/' ~ foto.caminho) }}" alt="Foto"
+                style="width: 200px; height: auto; border: 1px solid #ccc; padding: 5px"><br>
+                <small><strong>{{ foto.descricao if foto.descricao else 'Sem descrição' }}</strong></small>
+
+            </div>
         {% endfor %}
-        
-        <br>
-        Observações: <br>
-        <textarea name="observacoes">{{ observacoes }}</textarea><br><br>
-        <button type="submit">Salvar</button>
-    </form>
-    <h3>Fotos</h3>
-    {% for foto in fotos %}
-        <img src="{{ url_for('static', filename='uploads/' + foto.caminho) }}" width="200">
-    {% endfor %}
-    
-</body>
+
+    </div>
+
+
+{% else %}
+    <p>Nenhuma foto Enviada.</p>
+{% endif %}
+<br>
+<p><a href="{{ url_for('instalacoes.editar_instalacao', instalacao_id=instalacao_id') }}">Editar</a></p>
+<br>
+<br><a href="{{url_for('instalacoes.modelos_da_obra', obra_id=dados_obra.obra_id) }}">Voltar</a>
+
+
+
 {% endblock %}

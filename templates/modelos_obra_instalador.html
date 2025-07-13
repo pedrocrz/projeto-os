@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title%}Aparelhos da Obra{% endblock %} 
+{% block content %}
+
+<h2>Modelos da Obra: {{ obra.nome }} - {{ obra.cidade }}/ {{ obra.estado }}</h2>
+<p>Número do empenho: {{ obra.numero_empenho }}</p>
+<table border="1" cellpadding="4">
+    <tr>
+        <th>Fabricante:</th>
+        <th>Marca:</th>
+        <th>BTU's</th>
+        <th>Instalado / Total.</th>
+        <th>Ações</th>
+
+    </tr>
+    {% for modelo in modelos %}
+    <tr>
+        <td>{{ modelo.fabricante }}</td>
+        <td>{{ modelo.nome_marca }}</td>
+        <td>{{ modelo.capacidade_btu }}</td>
+        <td>{{ modelo.quantidade_instalada }} / {{ modelo.quantidade_total }}</td>
+        <td>
+            <a href="{{ url_for('instalacoes.nova_instalacao_modelo', obra_id=obra_id, local_modelo_id=modelo.local_modelo_id) }}">Registrar Instalação</a>
+        </td>
+    </tr>
+        {% if modelo.instalacoes %}
+            <tr>
+                <td colspan="5">
+                    <strong>Instalações:</strong>
+                    <ul>
+                        {% for inst in modelo.instalacoes %}
+                            <li>
+                                {{ inst.data.strftime('%d/%m/%Y %H:%M') }} --
+                                <a href="{{ url_for('instalacoes.editar_instalacao', instalacao_id=inst.id) }}">Ver/Editar </a>
+
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        {% endif %}
+        {% endfor %}
+
+</table>
+{% endblock %}

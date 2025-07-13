@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title%}Minhas Obras{% endblock %} 
+{% block content %}
+<h2>Minhas Obras</h2>
+<table border="1">
+    <tr>
+        <th>Nome:</th>
+        <th>Cidade:</th>
+        <th>Estado:</th>
+        <th>Empenho:</th>
+        <th>Ações:</th>
+    </tr>
+    {% for obra in obras %}
+    <tr>
+        <td>{{ obra.nome }}</td>
+        <td>{{ obra.cidade }}</td>
+        <td>{{ obra.estado }}</td>
+        <td>{{ obra.numero_empenho }}</td>
+        <td>
+            <a href="{{ url_for('instalacoes.modelos_da_obra', obra_id=obra.id) }}">Ver Modelos</a>
+        </td>
+
+    </tr>
+    {% endfor %}
+
+</table>
+{% endblock %}

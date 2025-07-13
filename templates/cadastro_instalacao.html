@@ -8,7 +8,7 @@
         <label>Obra:</label>
         <select name="obra_id" required>
             {% for obra in obras %}
-                <option value="{{ obra.id }}">{{ obra.nome}} - {{ obra.cidade }}</option>
+                <option value="{{ obra.id }}">{{ obra.nome}} - {{ obra.cidade }} - {{ obra.numero_empenho }}</option>
             {% endfor %}
         </select><br><br>
         <label>Observações</label><br>

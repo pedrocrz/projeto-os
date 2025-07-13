@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title%}Painel Escritório{% endblock %} 
+{% block content %}
+
+<h2>Dashboard Escritório</h2>
+
+<div sytle="display:flex;gap:40px;font-size:1.2em;">
+    <div><strong>Contratos:</strong>{{ total_contratos }}</div>
+    <div><strong>Obras:</strong>{{ total_obras }}</div>
+    <div><strong>Instalações:</strong>{{ total_inst }}</div>
+</div>
+
+<hr>
+<h3>Resumo por Contrato</h3>
+<table border="1" cellpadding="6">
+    <tr><th>Nº</th><th>Obras</th><th>Instalações</th><th>Detalhes</th></tr>
+    {% for c in resumo %}
+        <tr>
+            <td>{{ c.numero_contrato }}</td>
+            <td>{{ c.obras }}</td>
+            <td>{{ c.instalacoes }}</td>
+            <td>
+                <a href="{{ url_for('contratos.detalhes_contrato', contrato_id=c.id) }}">Abrir</a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

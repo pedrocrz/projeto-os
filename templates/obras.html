@@ -1,66 +1,84 @@
 {% extends 'base.html' %}
 {% block title%}Dashboard Admin{% endblock %} 
 {% block content %}
+<h2>Nova Obra/Empenho</h2>
 
-<body>
-    <h2>Nova Obra</h2>
-    <form method="POST">
-        <label>Nome</label><br>
-        <input type="text" name="nome" required><br>
+<!-- Formulário GET para selecionar o contrato-->
+<form method="GET">
+    <label>Contrato</label><br>
+    <select name="contrato_id" required onchange="this.form.submit()">
+        <option value="">Selecione um Contrato</option>
+        {% for contrato in contratos %}
+            <option value="{{ contrato.id }}" {% if contrato.id == contrato_selecionado %}selected{% endif %}>
+                {{ contrato.cliente_nome}} - Nº {{ contrato.numero_contrato }} - R$ {{ contrato.valor }}
 
-        <label>Endereco:</label><br>
-        <input type="text" name="endereco" required><br>
+            </option>
+        {% endfor %}
+    </select>
+</form>
+<!-- Formulário POST para cadastrar a obra-->
+ {% if contrato_selecionado %}
+ <form method="POST">
+    <input type="hidden" name="contrato_id" value="{{ contrato_selecionado }}">
 
-        <label>Cidade</label><br>
-        <input type="text" name="cidade" required><br>
+    <label>Número do Empenho</label><br>
+    <input type="text" name="numero_empenho" required><br>
 
-        <label>Estado</label><br>
-        <input type="text" name="estado" maxlength="2" required><br>
-        
-        <label>Contrato</label><br>
-        <select name="contrato_id" required onchange="this.form.submit()">
-            <option value="">Selecione um contrato</option>
-            {% for contrato in contratos %}
-                <option value="{{ contrato.id }}" {% if contrato.id == contrato_selecionado %}selected{% endif %}>
-                    {{ contrato.numero_contrato }}
-                </option>
-            {% endfor %}
-        </select><br>
+    <label>Nome da Obra</label><br>
+    <input type="text" name="nome" required><br>
 
-        {% if modelos_contrato %}
-            <h3>Modelos do Contrato</h3>
-            {% for modelo in modelos_contrato %}
-                <div>
-                    <label>
-                        <input type="checkbox" name="modelo_ids[]" value="{{ modelo.modelo_id }}">
-                        {{ modelo.fabricante }} - {{ modelo.nome_marca }} - {{ modelo.capacidade_btu }}
-                    </label>
-                    <input type="number" name="quantidade_{{ modelo.modelo_id }}" placeholder="Quantidade para esta obra">
+    <label>Endereço</label><br>
+    <input type="text" name="endereco" required><br>
 
-                </div>
-            {% endfor %}
-        {% endif %}
-        <br>
-        
+    <label>Cidade</label><br>
+    <input type="text" name="cidade" required><br>
+
+    <label>Estado</label><br>
+    <input type="text" name="estado" maxlength="2" required><br>
+    <hr>
+
+    <h3>Aparelhos do Contrato </h3>
+    {% for modelo in modelos_contrato %}
+        <div>
+            <label>
+                <input type="checkbox" name="modelo_ids[]" value="{{ modelo.modelo_id }}">
+                {{ modelo.fabricante }} - {{ modelo.nome_marca }} - {{ modelo.capacidade_btu }}
+                (máx: {{ modelo.quantidade }})
+
+            </label>
+            <input type="number" name="quantidade_{{ modelo.modelo_id }}" placeholder="Qtd para esta obra" min="0">
+
+        </div>
+    {% endfor %}
 
     <hr>
-    <label for="instaladores">Selecione os Instaladores Responsáveis:</label><br>
+    <label for="instaladores">Instaladores Responsáveis:</label><br>
     <select name="instaladores" multiple class="form-control">
         {% for instalador in instaladores %}
             <option value="{{ instalador.id }}">{{ instalador.nome }}</option>
         {% endfor %}
+
     </select><br>
-    <small>Segure CTRL (ou Command) para selecionar mais de um.</small>
+    <small>Segure CTRL para selecionar mais de um.</small>
     <br><br>
+
+    <label> Observações</label><br>
+    <textarea name="observacoes" rows="2" id=""></textarea><br>
+    <br>
+    <input type="submit" value="Cadastrar Obra">
+   
     
-    <h2>Obras Cadastradas</h2>
-    <ul>
-        {% for obra in obras %}
-            <li>{{ obra.nome }} - {{ obra.cidade }}/{{ obra.estado }}</li>
-        {% endfor %}
-        
-    </ul>
-    <input type="submit" value="Cadastrar">
-     </form>
-</body>
+ </form>
+ {% endif %}
+ <hr>
+ 
+ <h2>Obras Cadastradas</h2>
+ <ul>
+    {% for obra in obras %}
+    <li>{{ obras.nome }} - {{ obras.cidade }}/{{ obras.estado }}</li>
+    <td><a href="{{ url_for('obras.detalhes_obra', obra_id=obra.id) }}">Ver detalhes</a></td>
+    {% endfor %}
+
+ </ul>
+
 {% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title%}Detalhes Obra{% endblock %} 
+{% block content %}
+
+<h2>Detalhes da Obra - {{ obra.nome }} - {{ obra.numero_empenho }}</h2>
+<p><strong>Endereço: </strong>{{ obra.endereco }}</p>
+<p><strong>Cidade/Estado: </strong>{{ obra.cidade }} / {{ obra.estado }}</p>
+<p><strong>Contrato: </strong>{{ obra.numero_contrato }}</p>
+<p><strong>Cliente: </strong>{{ obra.cliente }}</p>
+<p><strong>Observações: </strong>{{ obra.observacoes or 'Nenhuma' }} </p>
+
+<hr>
+
+<h3>Instaladores</h3>
+<ul>
+    {% for inst in instaladores %}
+    <li>{{ inst.nome }}</li>
+    {% endfor %}
+
+</ul>
+<hr>
+
+<h3>Aparelhos e Instalações</h3>
+{% if modelos %}
+    {% for modelo in modelos %}
+        <h4>{{ modelo.fabricante }} - {{ modelo.nome_marca }} ({{ modelo.capacidade_btu }} BTU)</h4>
+        <p><strong>Total Previsto: </strong>{{ modelo.qtd_total }} | <strong>Instalado: </strong>{{ modelo.qtd_instalada }}</p>
+
+        <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th colspan="4">Resumo das Metragens (metros)</th>
+                </tr>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Mínima</th>
+                    <th>Média</th>
+                    <th>Máxima</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Linha</td>
+                    <td>{{ modelo.linha_min }}</td>
+                    <td>{{ modelo.linha_media }}</td>
+                    <td>{{ modelo.linha_max }}</td>
+                </tr>
+                <tr>
+                    <td>Dreno</td>
+                    <td>{{ modelo.dreno_min }}</td>
+                    <td>{{ modelo.dreno_media }}</td>
+                    <td>{{ modelo.dreno_max }}</td>
+                </tr>
+                <tr>
+                    <td>Elétrica</td>
+                    <td>{{ modelo.eletrica_min }} </td>
+                    <td>{{ modelo.eletrica_media }}</td>
+                    <td>{{ modelo.eletrica_max }}</td>
+                </tr>
+            </tbody>
+
+        </table>
+
+        {% if modelo.instalacoes %}
+            <br>
+            <h5>Instalações Realizadas</h5>
+            <table border="1" cellpadding="5" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Instalador</th>
+                        <th>Linha</th>
+                        <th>Dreno</th>
+                        <th>Elétrica</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inst in modelo.instalacoes %}
+                        <tr>
+                            <td>{{ inst.data.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ inst.instalador }}</td>
+                            <td>{{ inst.metragem_linha or 0 }}</td>
+                            <td>{{ inst.metragem_dreno or 0 }}</td>
+                            <td>{{ inst.metragem_eletrica or 0 }}</td>
+                            <td>
+                                <a href="{{ url_for('instalacoes.editar_instalacao', instalacao_id=inst.id) }}">Ver / Editar</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+            </table>
+        {% else %}
+            <p>Nenhuma instalação registrada ainda para este modelo.</p>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<a href="{{ url_for('obras.obras') }}">Voltar para lista de obras</a>
+{% endblock %}

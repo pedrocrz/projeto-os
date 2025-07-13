@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title%}Instalaçoes do Modelo{% endblock %} 
+{% block content %}
+<h2>Instalações do modelo</h2>
+
+<h4>Obra: {{ obra.nome }} - {{ obra.cidade }}/{{ obra.estado }}</h4>
+<p><strong>Endereço:</strong> {{ obra.endereco }}</p>
+<hr>
+
+<h4>Modelo: {{ modelo.fabricante }} - {{ modelo.nome_marca }} - {{ modelo.capacidade_btu }}</h3>
+<a href="{{ url_for('obras.obras') }}">Voltar Para Obras</a>
+<br><br>
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Instalador</th>
+        <th>Data</th>
+        <th>Observações</th>
+        <th>Foto</th>
+        <th>Detalhes</th>
+
+    </tr>
+    {% for i in instalacoes %}
+    <tr>
+        <td>{{ i.instalador }}</td>
+        <td>{{ i.data.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td>{{ i.observacoes or '---' }}</td>
+        <td>
+            <a href="{{ url_for('instalacoes.detalhes_instalacao', id=i.instalacao_id) }}">Ver Formulário</a>
+
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% if not instalacoes %}
+    <p>Nenhuma instalação registrada para esse modelo ainda.</p>
+{% endif %}
+
+{% endblock %}

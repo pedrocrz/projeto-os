@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Contratos Cadastrados{% endblock %}
+{% block content %}
+<h2>Contratos Ativos </h2>
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Contrato</th>
+            <th>Valor Total</th>
+            <th>Período</th>
+            <th>Dias P/ Vencer</th>
+            <th>Ações</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for contrato in contratos_ativos %}
+            <tr>
+                <td>{{ contrato.id }}</td>
+                <td>{{ contrato.cliente_nome }}</td>
+                <td>{{ contrato.numero_contrato }}</td>
+                <td>R$ {{ contrato.valor }}</td>
+                <td>{{ contrato.data_inicio }} a {{ contrato.data_fim }}</td>
+                <td>{{ contrato.dias_restantes }} dias</td>
+                <td><a href="{{ url_for('contratos.detalhes_contrato', contrato_id=contrato.id) }}">Visualizar</a></td>
+                           
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<hr>
+
+<h2 style="color: red;">Contratos Vencidos</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Contrato</th>
+            <th>Valor Total</th>
+            <th>Período</th>
+            <th>Vencido À</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for contrato in contratos_vencidos %}
+            <tr>
+                <td>{{ contrato.id }}</td>
+                <td>{{ contrato.cliente_nome }}</td>
+                <td>{{ contrato.numero_contrato }}</td>
+                <td>R$ {{ contrato.valor }}</td>
+                <td>{{ contrato.data_inicio }} a {{ contrato.data_fim }}</td>
+                <td>{{ contrato.dias_restantes|abs }} dias</td>
+                <td><a href="{{ url_for('contratos.detalhes_contrato', contrato_id=contrato.id) }}">Visualizar</a></td>
+
+                
+            </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+{% endblock %}

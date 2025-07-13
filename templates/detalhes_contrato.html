@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title%}Detalhes Contrato{% endblock %} 
+{% block content %}
+<h2>Contrato Nº {{ contrato.numero_contrato }}</h2>
+<p><strong>Cliente</strong>{{ contrato.cliente_nome }}</p>
+<p><strong>Período</strong>{{ contrato.data_inicio }} até {{ contrato.data_fim }}</p>
+<p><strong>Valor Total:</strong>R$ {{ contrato.valor }}</p>
+
+<hr>
+<h3>Modelos Relacionados</h3>
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Fabricante</th>
+            <th>Marca</th>
+            <th>Capacidade (BTU)</th>
+            <th>QTD</th>
+            <th>Valor Unitário</th>
+            <th>Valor Total</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for modelo in modelos %}
+            <tr>
+                <td>{{ modelo.fabricante }}</td>
+                <td>{{ modelo.nome_marca }}</td>
+                <td>{{ modelo.capacidade_btu }}</td>
+                <td>{{ modelo.quantidade }}</td>
+                <td>R$ {{ modelo.valor_unitario }}</td>
+                <td>R$ {{ modelo.quantidade * modelo.valor_unitario }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<hr>
+<h3>Obras Relacionadas</h3>
+{% if obras %}
+    <ul>
+        {% for obra in obras %}
+            <li>
+                <strong>{{ obra.nome}}</strong>(Empenho: {{ obra.numero_empenho }}) <br>
+                {{ obra.cidade }}/{{ obra.estado }} <br>
+                <strong>Instaladores:</strong> {{ instaladores_por_obra[obra.id]|join(', ') }} <br>
+                <strong>Observações</strong>{{ obra.observacoes or 'Nenhuma'}}
+                <br>
+                <td><a href="{{ url_for('obras.detalhes_obra', obra_id=obra.id) }}">Ver detalhes</a></td>
+
+            </li>
+            <br>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhuma obra relacionada a este contrato.</p>
+{% endif %}
+<a href="{{ url_for('obras.obras', contrato_id=contrato.id) }}">
+    <button>+ Nova Obra neste Contrato</button>
+</a>
+
+<hr>
+<h3>Localização das Obras</h3>
+{% if localizacoes %}
+    <iframe
+        width="100%"
+        height="350"
+        style="border:0"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.google.com/maps/embed/v1/place?key=COLOCAR_API_KEY_AQUI&q={{ localizacoes | join(',') }}">
+
+</iframe>
+{% else %}
+ <p>Sem obras para Mapear.</p>
+{% endif %}
+
+{% endblock %}
