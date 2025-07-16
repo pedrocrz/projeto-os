@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title%}Visualizar Instalação{% endblock %} 
+{% block content %}
+
+<h2>Visualizar Instalação</h2>
+
+<div style="margin-bottom: 20px;">
+    <h3>Informações da Instalação</h3>
+    <p><strong>Obra:</strong> {{ obra.nome if obra else 'N/A' }}</p>
+    <p><strong>Modelo:</strong> {{ modelo.fabricante if modelo else 'N/A' }} - {{ modelo.nome_marca if modelo else 'N/A' }} ({{ modelo.capacidade_btu if modelo else 'N/A' }} BTU)</p>
+    <p><strong>Instalador:</strong> {{ instalador.nome if instalador else 'N/A' }}</p>
+    <p><strong>Data da Instalação:</strong> {{ instalacao.data.strftime('%d/%m/%Y %H:%M') if instalacao.data else 'N/A' }}</p>
+</div>
+
+<div style="margin-bottom: 20px;">
+    <h3>Metragens</h3>
+    <p><strong>Tubulação Frigorígena:</strong> {{ instalacao.metragem_linha or 'N/A' }} metros</p>
+    <p><strong>Dreno:</strong> {{ instalacao.metragem_dreno or 'N/A' }} metros</p>
+    <p><strong>Elétrica:</strong> {{ instalacao.metragem_eletrica or 'N/A' }} metros</p>
+</div>
+
+<div style="margin-bottom: 20px;">
+    <h3>Checklist</h3>
+    {% set checklist_padrao = ['Evaporadora instalada', 'Condensadora instalada', 'Elétrica finalizada', 'Testes realizados'] %}
+    {% for item in checklist_padrao %}
+        <div>
+            <input type="checkbox" disabled
+                {% for marcado in checklist %}
+                    {% if marcado.item == item %}checked{% endif %}
+                {% endfor %}
+            > {{ item }}
+        </div>
+    {% endfor %}
+</div>
+
+<div style="margin-bottom: 20px;">
+    <h3>Fotos da Instalação</h3>
+    {% if fotos %}
+        {% for foto in fotos %}
+            <div style="margin-bottom: 15px;">
+                <h4>{{ foto.tipo }}</h4>
+                <img src="{{ url_for('static', filename='uploads/' ~ foto.caminho) }}" 
+                     style="max-width: 400px; max-height: 300px; border: 1px solid #ccc;">
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Nenhuma foto disponível para esta instalação.</p>
+    {% endif %}
+</div>
+
+<div style="margin-bottom: 20px;">
+    <h3>Observações</h3>
+    <div style="border: 1px solid #ccc; padding: 10px; min-height: 100px; background-color: #f9f9f9;">
+        {{ instalacao.observacoes or 'Nenhuma observação registrada.' }}
+    </div>
+</div>
+
+<div style="margin-top: 30px;">
+    <a href="javascript:history.back()" style="margin-right: 10px;">← Voltar</a>
+    {% if session.tipo == 'instalador' %}
+        <a href="{{ url_for('instalacoes.editar_instalacao', instalacao_id=instalacao.id) }}">Editar Instalação</a>
+    {% endif %}
+</div>
+
+{% endblock %}

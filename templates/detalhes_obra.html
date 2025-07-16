@@ -84,7 +84,10 @@
                             <td>{{ inst.metragem_dreno or 0 }}</td>
                             <td>{{ inst.metragem_eletrica or 0 }}</td>
                             <td>
-                                <a href="{{ url_for('instalacoes.editar_instalacao', instalacao_id=inst.id) }}">Ver / Editar</a>
+                                <a href="{{ url_for('instalacoes.visualizar_instalacao', instalacao_id=inst.id) }}" style="margin-right: 10px;">Ver Fotos</a>
+                                {% if session.tipo == 'instalador' %}
+                                    <a href="{{ url_for('instalacoes.editar_instalacao', instalacao_id=inst.id) }}">Editar</a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
