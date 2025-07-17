@@ -236,6 +236,55 @@ def editar_instalacao(instalacao_id):
     return render_template('editar_instalacao.html', instalacao=instalacao, checklist=checklist, fotos=fotos)
 
 
+@instalacoes_bp.route('/instalacao/<int:instalacao_id>/visualizar')
+def visualizar_instalacao(instalacao_id):
+    """Rota para visualizar instalação (somente leitura) - para admins"""
+    if 'usuario_id' not in session:
+        return redirect(url_for('auth.login'))
+    
+    conn = conectar()
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT * FROM instalacoes WHERE id = %s', (instalacao_id,))
+        instalacao = cursor.fetchone()
+        
+        if not instalacao:
+            flash('Instalação não encontrada')
+            return redirect(url_for('obras.obras'))
+
+        cursor.execute('SELECT * FROM checklist WHERE instalacao_id = %s', (instalacao_id))
+        checklist = cursor.fetchall()
+
+        cursor.execute('SELECT * FROM fotos_instalacoes WHERE instalacao_id = %s', (instalacao_id))
+        fotos = cursor.fetchall()
+        
+        # Buscar informações do instalador
+        cursor.execute('SELECT nome FROM usuarios WHERE id = %s', (instalacao['usuario_id'],))
+        instalador = cursor.fetchone()
+        
+        # Buscar informações do modelo
+        cursor.execute('''
+            SELECT m.fabricante, m.nome_marca, m.capacidade_btu
+            FROM locais_modelos_instalados lmi
+            JOIN modelos_ar_condicionado m ON lmi.modelo_id = m.id
+            WHERE lmi.id = %s
+            ''', (instalacao['local_modelo_id'],))
+        modelo = cursor.fetchone()
+        
+        # Buscar informações da obra
+        cursor.execute('SELECT nome FROM obras WHERE id = %s', (instalacao['obra_id'],))
+        obra = cursor.fetchone()
+
+    conn.close()
+    
+    return render_template('visualizar_instalacao.html', 
+                           instalacao=instalacao, 
+                           checklist=checklist, 
+                           fotos=fotos,
+                           instalador=instalador,
+                           modelo=modelo,
+                           obra=obra)
+
+
 
 
 

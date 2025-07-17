@@ -41,21 +41,21 @@
             <tbody>
                 <tr>
                     <td>Linha</td>
-                    <td>{{ modelo.linha_min }}</td>
-                    <td>{{ modelo.linha_media }}</td>
-                    <td>{{ modelo.linha_max }}</td>
+                    <td>{{ modelo.linha_min if modelo.linha_min > 0 else '-' }}</td>
+                    <td>{{ modelo.linha_media if modelo.linha_media > 0 else '-' }}</td>
+                    <td>{{ modelo.linha_max if modelo.linha_max > 0 else '-' }}</td>
                 </tr>
                 <tr>
                     <td>Dreno</td>
-                    <td>{{ modelo.dreno_min }}</td>
-                    <td>{{ modelo.dreno_media }}</td>
-                    <td>{{ modelo.dreno_max }}</td>
+                    <td>{{ modelo.dreno_min if modelo.dreno_min > 0 else '-' }}</td>
+                    <td>{{ modelo.dreno_media if modelo.dreno_media > 0 else '-' }}</td>
+                    <td>{{ modelo.dreno_max if modelo.dreno_max > 0 else '-' }}</td>
                 </tr>
                 <tr>
                     <td>Elétrica</td>
-                    <td>{{ modelo.eletrica_min }} </td>
-                    <td>{{ modelo.eletrica_media }}</td>
-                    <td>{{ modelo.eletrica_max }}</td>
+                    <td>{{ modelo.eletrica_min if modelo.eletrica_min > 0 else '-' }}</td>
+                    <td>{{ modelo.eletrica_media if modelo.eletrica_media > 0 else '-' }}</td>
+                    <td>{{ modelo.eletrica_max if modelo.eletrica_max > 0 else '-' }}</td>
                 </tr>
             </tbody>
 
@@ -78,13 +78,22 @@
                 <tbody>
                     {% for inst in modelo.instalacoes %}
                         <tr>
-                            <td>{{ inst.data.strftime('%d/%m/%Y %H:%M') }}</td>
-                            <td>{{ inst.instalador }}</td>
-                            <td>{{ inst.metragem_linha or 0 }}</td>
-                            <td>{{ inst.metragem_dreno or 0 }}</td>
-                            <td>{{ inst.metragem_eletrica or 0 }}</td>
                             <td>
-                                <a href="{{ url_for('instalacoes.editar_instalacao', instalacao_id=inst.id) }}">Ver / Editar</a>
+                                {% if inst.data %}
+                                    {{ inst.data.strftime('%d/%m/%Y %H:%M') }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td>{{ inst.instalador }}</td>
+                            <td>{{ inst.metragem_linha if inst.metragem_linha else '-' }}</td>
+                            <td>{{ inst.metragem_dreno if inst.metragem_dreno else '-' }}</td>
+                            <td>{{ inst.metragem_eletrica if inst.metragem_eletrica else '-' }}</td>
+                            <td>
+                                <a href="{{ url_for('instalacoes.visualizar_instalacao', instalacao_id=inst.id) }}" style="margin-right: 10px;">Ver Fotos</a>
+                                {% if session.tipo == 'instalador' %}
+                                    <a href="{{ url_for('instalacoes.editar_instalacao', instalacao_id=inst.id) }}">Editar</a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
