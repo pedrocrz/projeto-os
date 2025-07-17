@@ -229,9 +229,9 @@ def detalhes_obra(obra_id):
                     WHERE i.obra_id = %s AND i.local_modelo_id = %s
                     ORDER BY i.data DESC
                     ''', (obra_id, local_modelo_id))
-            instalacoes = cursor.fetchall()
-            modelo['instalacoes'] = instalacoes
-            modelo['qtd_instalada'] = len(instalacoes)
+                instalacoes = cursor.fetchall()
+                modelo['instalacoes'] = instalacoes
+                modelo['qtd_instalada'] = len(instalacoes)
             else:
                 instalacoes = []
                 modelo['instalacoes'] = instalacoes
@@ -239,9 +239,9 @@ def detalhes_obra(obra_id):
 
             # Resumo das metragens
             if instalacoes:
-                linhas = [i['metragem_linha'] for i in instalacoes if i['metragem_linha']]
-                drenos = [i['metragem_dreno'] for i in instalacoes if i['metragem_dreno']]
-                eletricas = [i['metragem_eletrica'] for i in instalacoes if i['metragem_eletrica']]
+                linhas = [i['metragem_linha'] for i in instalacoes if i['metragem_linha'] is not None and i['metragem_linha'] > 0]
+                drenos = [i['metragem_dreno'] for i in instalacoes if i['metragem_dreno'] is not None and i['metragem_dreno'] > 0]
+                eletricas = [i['metragem_eletrica'] for i in instalacoes if i['metragem_eletrica'] is not None and i['metragem_eletrica'] > 0]
 
                 modelo['linha_min'] = min(linhas) if linhas else 0
                 modelo['linha_max'] = max(linhas) if linhas else 0

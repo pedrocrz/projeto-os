@@ -9,7 +9,13 @@
     <p><strong>Obra:</strong> {{ obra.nome if obra else 'N/A' }}</p>
     <p><strong>Modelo:</strong> {{ modelo.fabricante if modelo else 'N/A' }} - {{ modelo.nome_marca if modelo else 'N/A' }} ({{ modelo.capacidade_btu if modelo else 'N/A' }} BTU)</p>
     <p><strong>Instalador:</strong> {{ instalador.nome if instalador else 'N/A' }}</p>
-    <p><strong>Data da Instalação:</strong> {{ instalacao.data.strftime('%d/%m/%Y %H:%M') if instalacao.data else 'N/A' }}</p>
+    <p><strong>Data da Instalação:</strong> 
+        {% if instalacao.data %}
+            {{ instalacao.data.strftime('%d/%m/%Y %H:%M') }}
+        {% else %}
+            N/A
+        {% endif %}
+    </p>
 </div>
 
 <div style="margin-bottom: 20px;">
