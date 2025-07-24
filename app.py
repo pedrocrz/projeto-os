@@ -21,4 +21,4 @@ init_routes(app)
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='192.168.5.104', port= 5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
