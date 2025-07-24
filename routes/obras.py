@@ -209,27 +209,34 @@ def detalhes_obra(obra_id):
             ''', (obra_id))
         modelos = cursor.fetchall()
 
-        # Para cada modelo, puxas as instalações
+        # Para cada modelo, puxar as instalações
         for modelo in modelos:
             modelo_id = modelo['modelo_id']
             
-            # instalações feitas nesse modelo
-
+            # Buscar o local_modelo_instalado_id correspondente
             cursor.execute('''
-                SELECT i.id, i.data, u.nome AS instalador, i.metragem_linha, i.metragem_dreno, i.metragem_eletrica
-                FROM instalacoes i
-                JOIN usuarios u ON i.usuario_id = u.id
-                JOIN instaladores_instalacao ii ON ii.instalacao_id = i.id
-                JOIN instaladores_equipamentos ie ON ie.instalador_id = u.id
-                JOIN equipamentos e ON e.id = ie.equipamento_id
-                WHERE i.obra_id = %s AND e.modelo = (
-                            SELECT CONCAT(nome_marca, ' - ', fabricante, ' - ', capacidade_btu)
-                            FROM modelos_ar_condicionado WHERE ID = %s
-                           )             
+                SELECT id FROM locais_modelos_instalados 
+                WHERE local_id = %s AND modelo_id = %s
                 ''', (obra_id, modelo_id))
-            instalacoes = cursor.fetchall()
-            modelo['instalacoes'] = instalacoes
-            modelo['qtd_instalada'] = len(instalacoes)
+            local_modelo = cursor.fetchone()
+            
+            if local_modelo:
+                local_modelo_id = local_modelo['id']
+                
+                # Instalações feitas nesse modelo
+                cursor.execute('''
+                    SELECT i.id, i.data, u.nome AS instalador, i.metragem_linha, i.metragem_dreno, i.metragem_eletrica
+                    FROM instalacoes i
+                    JOIN usuarios u ON i.usuario_id = u.id
+                    WHERE i.local_modelo_id = %s
+                    ORDER BY i.data DESC
+                    ''', (local_modelo_id,))
+                instalacoes = cursor.fetchall()
+                modelo['instalacoes'] = instalacoes
+                modelo['qtd_instalada'] = len(instalacoes)
+            else:
+                modelo['instalacoes'] = []
+                modelo['qtd_instalada'] = 0
 
             # Resumo das metragens
             if instalacoes:

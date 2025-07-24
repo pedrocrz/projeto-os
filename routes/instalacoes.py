@@ -236,6 +236,65 @@ def editar_instalacao(instalacao_id):
     return render_template('editar_instalacao.html', instalacao=instalacao, checklist=checklist, fotos=fotos)
 
 
+@instalacoes_bp.route('/relatorio_instalador', methods=['GET', 'POST'])
+def relatorio_instalador():
+    if 'usuario_id' not in session or session['tipo'] != 'escritorio':
+        return redirect(url_for('auth.login'))
+    
+    conn = conectar()
+    with conn.cursor() as cursor:
+        # Buscar todos os instaladores
+        cursor.execute("SELECT id, nome FROM usuarios WHERE tipo = 'instalador' ORDER BY nome")
+        instaladores = cursor.fetchall()
+        
+        instalacoes_instalador = []
+        instalador_selecionado = None
+        
+        if request.method == 'POST':
+            instalador_id = request.form.get('instalador_id')
+            if instalador_id:
+                # Buscar dados do instalador selecionado
+                cursor.execute("SELECT nome FROM usuarios WHERE id = %s", (instalador_id,))
+                instalador_selecionado = cursor.fetchone()
+                
+                # Buscar todas as instalações do instalador com detalhes
+                cursor.execute('''
+                    SELECT 
+                        i.id AS instalacao_id,
+                        i.data,
+                        i.observacoes,
+                        i.metragem_linha,
+                        i.metragem_dreno,
+                        i.metragem_eletrica,
+                        o.nome AS obra_nome,
+                        o.cidade AS obra_cidade,
+                        o.estado AS obra_estado,
+                        mac.fabricante,
+                        mac.nome_marca,
+                        mac.capacidade_btu
+                    FROM instalacoes i
+                    JOIN obras o ON i.obra_id = o.id
+                    JOIN locais_modelos_instalados lmi ON i.local_modelo_id = lmi.id
+                    JOIN modelos_ar_condicionado mac ON lmi.modelo_id = mac.id
+                    WHERE i.usuario_id = %s
+                    ORDER BY i.data DESC
+                    ''', (instalador_id,))
+                instalacoes_instalador = cursor.fetchall()
+                
+                # Para cada instalação, buscar as fotos
+                for instalacao in instalacoes_instalador:
+                    cursor.execute('''
+                        SELECT caminho, tipo
+                        FROM fotos_instalacoes
+                        WHERE instalacao_id = %s
+                        ''', (instalacao['instalacao_id'],))
+                    instalacao['fotos'] = cursor.fetchall()
+    
+    conn.close()
+    return render_template('relatorio_instalador.html',
+                         instaladores=instaladores,
+                         instalacoes=instalacoes_instalador,
+                         instalador_selecionado=instalador_selecionado)
 
 
 
