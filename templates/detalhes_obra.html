@@ -24,12 +24,19 @@
 {% if modelos %}
     {% for modelo in modelos %}
         <h4>{{ modelo.fabricante }} - {{ modelo.nome_marca }} ({{ modelo.capacidade_btu }} BTU)</h4>
-        <p><strong>Total Previsto: </strong>{{ modelo.qtd_total }} | <strong>Instalado: </strong>{{ modelo.qtd_instalada }}</p>
+        <div style="background-color: #f0f8ff; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+            <p><strong>📋 Status das Instalações:</strong></p>
+            <p style="font-size: 16px;">
+                <strong>Total Previsto: </strong>{{ modelo.qtd_total }} | 
+                <strong>✅ Total Instalado: </strong><span style="color: #008000; font-weight: bold;">{{ modelo.qtd_instalada }}</span> |
+                <strong>Restante: </strong><span style="color: #ff6600; font-weight: bold;">{{ modelo.qtd_total - modelo.qtd_instalada }}</span>
+            </p>
+        </div>
 
         <table border="1" cellpadding="5" cellspacing="0">
             <thead>
                 <tr>
-                    <th colspan="4">Resumo das Metragens (metros)</th>
+                    <th colspan="4">Resumo das Metragens (metros) - {{ modelo.qtd_instalada }} instalações realizadas</th>
                 </tr>
                 <tr>
                     <th>Tipo</th>

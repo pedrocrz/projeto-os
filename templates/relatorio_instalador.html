@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Relatório por Instalador{% endblock %}
+{% block content %}
+
+<h2>Relatório por Instalador</h2>
+
+<form method="POST">
+    <label for="instalador_id">Selecione o Instalador:</label>
+    <select name="instalador_id" id="instalador_id" required>
+        <option value="">-- Escolha um instalador --</option>
+        {% for instalador in instaladores %}
+            <option value="{{ instalador.id }}" 
+                {% if instalador_selecionado and instalador.id == instalador_selecionado.id %}selected{% endif %}>
+                {{ instalador.nome }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Gerar Relatório</button>
+</form>
+
+{% if instalador_selecionado %}
+<hr>
+<h3>Relatório de {{ instalador_selecionado.nome }}</h3>
+<p><strong>Total de Instalações:</strong> {{ instalacoes|length }}</p>
+
+{% if instalacoes %}
+    <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Obra</th>
+                <th>Localização</th>
+                <th>Modelo do Aparelho</th>
+                <th>Metragens (metros)</th>
+                <th>Observações</th>
+                <th>Fotos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for instalacao in instalacoes %}
+                <tr>
+                    <td>{{ instalacao.data.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>{{ instalacao.obra_nome }}</td>
+                    <td>{{ instalacao.obra_cidade }}/{{ instalacao.obra_estado }}</td>
+                    <td>{{ instalacao.fabricante }} - {{ instalacao.nome_marca }}<br>
+                        <small>({{ instalacao.capacidade_btu }} BTU)</small>
+                    </td>
+                    <td>
+                        <strong>Linha:</strong> {{ instalacao.metragem_linha or 0 }}m<br>
+                        <strong>Dreno:</strong> {{ instalacao.metragem_dreno or 0 }}m<br>
+                        <strong>Elétrica:</strong> {{ instalacao.metragem_eletrica or 0 }}m
+                    </td>
+                    <td>{{ instalacao.observacoes or 'Nenhuma' }}</td>
+                    <td>
+                        {% if instalacao.fotos %}
+                            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                {% for foto in instalacao.fotos %}
+                                    <div style="text-align: center;">
+                                        <img src="{{ url_for('static', filename='uploads/' + foto.caminho) }}" 
+                                             alt="{{ foto.tipo }}" 
+                                             style="width: 80px; height: 60px; object-fit: cover; border: 1px solid #ccc;">
+                                        <br><small>{{ foto.tipo }}</small>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <span style="color: #666;">Sem fotos</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Summary Statistics -->
+    <div style="margin-top: 30px; background-color: #f9f9f9; padding: 15px; border-radius: 5px;">
+        <h4>Resumo Estatístico</h4>
+        {% set metragens_linha = instalacoes | selectattr('metragem_linha') | map(attribute='metragem_linha') | list %}
+        {% set metragens_dreno = instalacoes | selectattr('metragem_dreno') | map(attribute='metragem_dreno') | list %}
+        {% set metragens_eletrica = instalacoes | selectattr('metragem_eletrica') | map(attribute='metragem_eletrica') | list %}
+        
+        <div style="display: flex; gap: 30px;">
+            <div>
+                <strong>Metragem de Linha:</strong><br>
+                Média: {{ "%.2f"|format(metragens_linha|sum / metragens_linha|length) if metragens_linha else 0 }}m<br>
+                Total: {{ metragens_linha|sum if metragens_linha else 0 }}m
+            </div>
+            <div>
+                <strong>Metragem de Dreno:</strong><br>
+                Média: {{ "%.2f"|format(metragens_dreno|sum / metragens_dreno|length) if metragens_dreno else 0 }}m<br>
+                Total: {{ metragens_dreno|sum if metragens_dreno else 0 }}m
+            </div>
+            <div>
+                <strong>Metragem Elétrica:</strong><br>
+                Média: {{ "%.2f"|format(metragens_eletrica|sum / metragens_eletrica|length) if metragens_eletrica else 0 }}m<br>
+                Total: {{ metragens_eletrica|sum if metragens_eletrica else 0 }}m
+            </div>
+        </div>
+    </div>
+{% else %}
+    <p>Nenhuma instalação encontrada para este instalador.</p>
+{% endif %}
+{% endif %}
+
+<br><br>
+<a href="{{ url_for('dashboard.dashboard') }}">Voltar ao Dashboard</a>
+
+{% endblock %}
