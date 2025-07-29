@@ -29,13 +29,14 @@
         <table border="1" cellpadding="5" cellspacing="0">
             <thead>
                 <tr>
-                    <th colspan="4">Resumo das Metragens (metros)</th>
+                    <th colspan="5">Resumo das Metragens (metros) - {{ modelo.qtd_instalada }} instalações realizadas</th>
                 </tr>
                 <tr>
                     <th>Tipo</th>
                     <th>Mínima</th>
                     <th>Média</th>
                     <th>Máxima</th>
+                    <th>Total de Instalações</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,6 +45,7 @@
                     <td>{{ modelo.linha_min }}</td>
                     <td>{{ modelo.linha_media }}</td>
                     <td>{{ modelo.linha_max }}</td>
+                    <td rowspan="3" style="text-align: center; vertical-align: middle; font-weight: bold; font-size: 1.2em;">{{ modelo.qtd_instalada }}</td>
                 </tr>
                 <tr>
                     <td>Dreno</td>

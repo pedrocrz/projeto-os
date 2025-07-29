@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title%}Relatório do Instalador{% endblock %} 
+{% block content %}
+
+<h2>Relatório do Instalador</h2>
+
+<div style="background-color: #f9f9f9; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+    <h4>Instruções de Uso:</h4>
+    <ul>
+        <li>Selecione um instalador na lista abaixo para visualizar seu relatório completo</li>
+        <li>O relatório mostra todas as obras em que o instalador atuou</li>
+        <li>Para cada instalação, você verá: obra, modelo do aparelho, data, metragens e fotos (quando disponíveis)</li>
+        <li>Use essas informações para acompanhar a produtividade e qualidade do trabalho dos instaladores</li>
+    </ul>
+</div>
+
+<h3>Selecionar Instalador</h3>
+<form method="GET">
+    <select name="instalador_id" onchange="this.form.submit()" style="padding: 8px; font-size: 14px; margin-right: 10px;">
+        <option value="">-- Selecione um instalador --</option>
+        {% for instalador in instaladores %}
+            <option value="{{ instalador.id }}" 
+                    {% if instalador_selecionado == instalador.id %}selected{% endif %}>
+                {{ instalador.nome }}
+            </option>
+        {% endfor %}
+    </select>
+</form>
+
+{% if dados_instalador %}
+<hr>
+<h3>Relatório de {{ dados_instalador.nome }}</h3>
+
+{% if dados_instalador.obras %}
+    <p><strong>Total de obras: </strong>{{ dados_instalador.obras|length }}</p>
+    
+    {% for obra in dados_instalador.obras %}
+        <div style="border: 1px solid #ddd; margin: 15px 0; padding: 15px; background-color: #fafafa;">
+            <h4>{{ obra.nome }}</h4>
+            <p><strong>Localização: </strong>{{ obra.endereco }} - {{ obra.cidade }}/{{ obra.estado }}</p>
+            
+            {% if obra.instalacoes %}
+                <h5>Instalações Realizadas ({{ obra.instalacoes|length }})</h5>
+                <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; margin-top: 10px;">
+                    <thead>
+                        <tr style="background-color: #e0e0e0;">
+                            <th>Data</th>
+                            <th>Modelo</th>
+                            <th>Linha (m)</th>
+                            <th>Dreno (m)</th>
+                            <th>Elétrica (m)</th>
+                            <th>Observações</th>
+                            <th>Fotos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inst in obra.instalacoes %}
+                            <tr>
+                                <td>{{ inst.data.strftime('%d/%m/%Y %H:%M') if inst.data else 'N/A' }}</td>
+                                <td>
+                                    {% if inst.fabricante and inst.nome_marca and inst.capacidade_btu %}
+                                        {{ inst.fabricante }} - {{ inst.nome_marca }} ({{ inst.capacidade_btu }} BTU)
+                                    {% else %}
+                                        Modelo não identificado
+                                    {% endif %}
+                                </td>
+                                <td>{{ inst.metragem_linha or 0 }}</td>
+                                <td>{{ inst.metragem_dreno or 0 }}</td>
+                                <td>{{ inst.metragem_eletrica or 0 }}</td>
+                                <td>{{ inst.observacoes or 'Nenhuma' }}</td>
+                                <td>
+                                    {% if inst.fotos %}
+                                        {% set fotos_lista = inst.fotos.split(',') %}
+                                        {{ fotos_lista|length }} foto(s)
+                                    {% else %}
+                                        Sem fotos
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="color: #666; font-style: italic;">Nenhuma instalação registrada para este instalador nesta obra.</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <p style="color: #666; font-style: italic;">Este instalador não possui obras associadas.</p>
+{% endif %}
+
+{% endif %}
+
+<br>
+<a href="{{ url_for('dashboard.painel_escritorio') }}" style="background-color: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">← Voltar ao Painel</a>
+
+{% endblock %}
