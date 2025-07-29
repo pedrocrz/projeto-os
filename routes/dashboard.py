@@ -112,3 +112,67 @@ def painel_escritorio():
                             total_obras=total_obras,
                             total_inst=total_inst,
                             resumo=resumo)
+
+@dashboard_bp.route('/relatorio-instalador')
+def relatorio_instalador():
+    if 'usuario_id' not in session or session['tipo'] != 'escritorio':
+        return redirect(url_for('auth.login'))
+    
+    conn = conectar()
+    instalador_selecionado = request.args.get('instalador_id')
+    
+    with conn.cursor() as cursor:
+        # Buscar todos os instaladores
+        cursor.execute('''
+            SELECT id, nome
+            FROM usuarios
+            WHERE tipo = 'instalador'
+            ORDER BY nome
+        ''')
+        instaladores = cursor.fetchall()
+        
+        dados_instalador = None
+        if instalador_selecionado:
+            # Buscar dados do instalador selecionado
+            cursor.execute('''
+                SELECT id, nome, email
+                FROM usuarios
+                WHERE id = %s AND tipo = 'instalador'
+            ''', (instalador_selecionado,))
+            dados_instalador = cursor.fetchone()
+            
+            if dados_instalador:
+                # Buscar todas as obras em que o instalador atuou
+                cursor.execute('''
+                    SELECT DISTINCT o.id, o.nome, o.cidade, o.estado, o.endereco
+                    FROM obras o
+                    JOIN instaladores_obra io ON o.id = io.obra_id
+                    WHERE io.usuario_id = %s
+                    ORDER BY o.nome
+                ''', (instalador_selecionado,))
+                obras = cursor.fetchall()
+                
+                # Para cada obra, buscar as instalações do instalador
+                for obra in obras:
+                    cursor.execute('''
+                        SELECT i.id, i.data, i.metragem_linha, i.metragem_dreno, i.metragem_eletrica, i.observacoes,
+                               m.fabricante, m.nome_marca, m.capacidade_btu,
+                               GROUP_CONCAT(f.caminho_arquivo) as fotos
+                        FROM instalacoes i
+                        LEFT JOIN equipamentos e ON i.id = e.instalacao_id
+                        LEFT JOIN modelos_ar_condicionado m ON e.modelo = CONCAT(m.nome_marca, ' - ', m.fabricante, ' - ', m.capacidade_btu)
+                        LEFT JOIN fotos_instalacao f ON i.id = f.instalacao_id
+                        WHERE i.obra_id = %s AND i.usuario_id = %s
+                        GROUP BY i.id
+                        ORDER BY i.data DESC
+                    ''', (obra['id'], instalador_selecionado))
+                    instalacoes = cursor.fetchall()
+                    obra['instalacoes'] = instalacoes
+                
+                dados_instalador['obras'] = obras
+    
+    conn.close()
+    return render_template('relatorio_instalador.html', 
+                         instaladores=instaladores,
+                         dados_instalador=dados_instalador,
+                         instalador_selecionado=int(instalador_selecionado) if instalador_selecionado else None)
