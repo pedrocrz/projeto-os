@@ -7,6 +7,7 @@ from .clientes import clientes_bp
 from .contratos import contratos_bp
 from .catalogo import catalogo_bp
 from .cad_contratos import cad_contratos_bp
+from .relatorios import relatorios_bp
 
 def init_routes(app):
     app.register_blueprint(auth_bp)
@@ -18,6 +19,7 @@ def init_routes(app):
     app.register_blueprint(contratos_bp)
     app.register_blueprint(catalogo_bp)
     app.register_blueprint(cad_contratos_bp)
+    app.register_blueprint(relatorios_bp, url_prefix='/relatorios')
 
     
 

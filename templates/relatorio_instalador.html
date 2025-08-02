@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}Relatório de Instalações por Instalador{% endblock %}
+{% block content %}
+
+<h1>Relatório de Instalações por Instalador</h1>
+
+<div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+    <form method="POST">
+        <label for="instalador_id"><strong>Selecione o Instalador:</strong></label>
+        <select name="instalador_id" id="instalador_id" required style="padding: 5px; margin: 0 10px;">
+            <option value="">-- Selecione um instalador --</option>
+            {% for instalador in instaladores %}
+                <option value="{{ instalador.id }}" 
+                    {% if instalador_selecionado and instalador.id == request.form.get('instalador_id')|int %}selected{% endif %}>
+                    {{ instalador.nome }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" style="padding: 5px 15px; background-color: #007bff; color: white; border: none; border-radius: 3px;">
+            Gerar Relatório
+        </button>
+    </form>
+</div>
+
+{% if instalador_selecionado %}
+<div style="margin-bottom: 30px;">
+    <h2>Relatório para: {{ instalador_selecionado.nome }}</h2>
+    
+    <!-- Resumo de Equipamentos -->
+    <h3>Total de Aparelhos Instalados por Capacidade/Modelo</h3>
+    {% if resumo_equipamentos %}
+    <table border="1" style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+        <thead style="background-color: #e9ecef;">
+            <tr>
+                <th style="padding: 10px; text-align: left;">Fabricante</th>
+                <th style="padding: 10px; text-align: left;">Modelo</th>
+                <th style="padding: 10px; text-align: left;">Capacidade (BTU)</th>
+                <th style="padding: 10px; text-align: center;">Quantidade Instalada</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for equipamento in resumo_equipamentos %}
+            <tr>
+                <td style="padding: 8px;">{{ equipamento.fabricante }}</td>
+                <td style="padding: 8px;">{{ equipamento.nome_marca }}</td>
+                <td style="padding: 8px; text-align: center;">{{ equipamento.capacidade_btu }}</td>
+                <td style="padding: 8px; text-align: center;"><strong>{{ equipamento.quantidade_instalada }} und</strong></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #666; font-style: italic;">Nenhum equipamento instalado encontrado.</p>
+    {% endif %}
+    
+    <!-- Resumo de Metragem por Obra -->
+    <h3>Total de Metragem Utilizada por Obra</h3>
+    {% if resumo_obras %}
+    <table border="1" style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+        <thead style="background-color: #e9ecef;">
+            <tr>
+                <th style="padding: 10px; text-align: left;">Obra</th>
+                <th style="padding: 10px; text-align: left;">Local</th>
+                <th style="padding: 10px; text-align: center;">Instalações</th>
+                <th style="padding: 10px; text-align: center;">Metragem Linha (m)</th>
+                <th style="padding: 10px; text-align: center;">Metragem Dreno (m)</th>
+                <th style="padding: 10px; text-align: center;">Metragem Elétrica (m)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obra in resumo_obras %}
+            <tr>
+                <td style="padding: 8px;">{{ obra.obra_nome }}</td>
+                <td style="padding: 8px;">{{ obra.cidade }} - {{ obra.estado }}</td>
+                <td style="padding: 8px; text-align: center;">{{ obra.total_instalacoes }}</td>
+                <td style="padding: 8px; text-align: center;">{{ obra.total_metragem_linha or 0 }}</td>
+                <td style="padding: 8px; text-align: center;">{{ obra.total_metragem_dreno or 0 }}</td>
+                <td style="padding: 8px; text-align: center;">{{ obra.total_metragem_eletrica or 0 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #666; font-style: italic;">Nenhuma obra encontrada para este instalador.</p>
+    {% endif %}
+    
+    <!-- Detalhes das Instalações -->
+    <h3>Resumo Detalhado das Instalações</h3>
+    {% if detalhes_instalacoes %}
+    <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd;">
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead style="background-color: #e9ecef; position: sticky; top: 0;">
+                <tr>
+                    <th style="padding: 8px; text-align: left;">Data</th>
+                    <th style="padding: 8px; text-align: left;">Obra</th>
+                    <th style="padding: 8px; text-align: left;">Equipamento</th>
+                    <th style="padding: 8px; text-align: center;">BTU</th>
+                    <th style="padding: 8px; text-align: center;">Linha (m)</th>
+                    <th style="padding: 8px; text-align: center;">Dreno (m)</th>
+                    <th style="padding: 8px; text-align: center;">Elétrica (m)</th>
+                    <th style="padding: 8px; text-align: left;">Observações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for instalacao in detalhes_instalacoes %}
+                <tr>
+                    <td style="padding: 6px;">{{ instalacao.data.strftime('%d/%m/%Y') if instalacao.data else 'N/A' }}</td>
+                    <td style="padding: 6px;">{{ instalacao.obra_nome }}</td>
+                    <td style="padding: 6px;">{{ instalacao.fabricante }} {{ instalacao.nome_marca }}</td>
+                    <td style="padding: 6px; text-align: center;">{{ instalacao.capacidade_btu }}</td>
+                    <td style="padding: 6px; text-align: center;">{{ instalacao.metragem_linha or '-' }}</td>
+                    <td style="padding: 6px; text-align: center;">{{ instalacao.metragem_dreno or '-' }}</td>
+                    <td style="padding: 6px; text-align: center;">{{ instalacao.metragem_eletrica or '-' }}</td>
+                    <td style="padding: 6px; max-width: 200px; word-wrap: break-word;">
+                        {{ instalacao.observacoes[:100] }}{% if instalacao.observacoes and instalacao.observacoes|length > 100 %}...{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: #666; font-style: italic;">Nenhuma instalação detalhada encontrada.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

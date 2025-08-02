@@ -12,6 +12,7 @@
         <a href="{{ url_for('catalogo.cadastrar_modelo_ar') }}">Cadastrar modelo</a> |
         <a href="{{ url_for('contratos.listar_contratos')}}">Listar Contratos</a> |
         <a href="{{ url_for('dashboard.painel_escritorio') }}">Painel</a> |
+        <a href="{{ url_for('relatorios.relatorio_instalador') }}">Relatórios por Instalador</a> |
     {% elif session['tipo'] == 'instalador' %}
         <a href="{{ url_for('dashboard.dashboard_instalador') }}">Minhas Instalações</a> |
         <a href="{{ url_for('instalacoes.obras_instalador') }}">Nova Instalação</a> |

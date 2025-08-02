@@ -31,7 +31,7 @@ def login():
             return 'Usuário ou senha incorretos'
     return render_template('login.html')
 
-@auth_bp.route('/')
+@auth_bp.route('/logout')
 def logout():
     session.clear() # limpa tudo da sessão
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
