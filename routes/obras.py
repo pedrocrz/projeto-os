@@ -123,6 +123,77 @@ def obras():
         contrato_selecionado=int(contrato_selecionado) if contrato_selecionado else None
     )
 
+@obras_bp.route('/editar/<int:obra_id>', methods=['GET', 'POST'])
+def editar_obra(obra_id):
+    if 'usuario_id' not in session or session['tipo'] != 'escritorio':
+        return redirect(url_for('auth.login'))
+
+    conn = conectar()
+    with conn.cursor() as cursor:
+        if request.method == 'GET':
+            # Buscar dados da obra para edição
+            cursor.execute('''
+                SELECT o.id, o.nome, o.endereco, o.cidade, o.estado, o.numero_empenho, o.observacoes, o.contrato_id
+                FROM obras o 
+                WHERE o.id = %s
+                ''', (obra_id,))
+            obra = cursor.fetchone()
+            
+            if not obra:
+                flash('Obra não encontrada!')
+                return redirect(url_for('obras.obras'))
+
+            # Buscar instaladores da obra
+            cursor.execute('''
+                SELECT u.id
+                FROM instaladores_obra io
+                JOIN usuarios u ON io.usuario_id = u.id
+                WHERE io.obra_id = %s
+                ''', (obra_id,))
+            instaladores_obra = [inst['id'] for inst in cursor.fetchall()]
+
+            # Buscar todos os instaladores disponíveis
+            cursor.execute("SELECT id, nome FROM usuarios WHERE tipo = 'instalador'")
+            instaladores = cursor.fetchall()
+
+            conn.close()
+            return render_template('editar_obra.html', obra=obra, instaladores=instaladores, instaladores_obra=instaladores_obra)
+
+        # POST: Processar edição
+        if request.method == 'POST':
+            nome = request.form['nome']
+            endereco = request.form['endereco']
+            cidade = request.form['cidade']
+            estado = request.form['estado']
+            numero_empenho = request.form['numero_empenho']
+            observacoes = request.form.get('observacoes', '')
+
+            # Atualizar obra
+            cursor.execute('''
+                UPDATE obras 
+                SET nome = %s, endereco = %s, cidade = %s, estado = %s, 
+                    numero_empenho = %s, observacoes = %s
+                WHERE id = %s
+                ''', (nome, endereco, cidade, estado, numero_empenho, observacoes, obra_id))
+
+            # Atualizar instaladores
+            # Primeiro remove todos os instaladores da obra
+            cursor.execute('DELETE FROM instaladores_obra WHERE obra_id = %s', (obra_id,))
+            
+            # Depois adiciona os selecionados
+            instaladores_selecionados = request.form.getlist('instaladores')
+            for usuario_id in instaladores_selecionados:
+                cursor.execute('''
+                    INSERT INTO instaladores_obra (obra_id, usuario_id)
+                    VALUES (%s, %s)
+                    ''', (obra_id, usuario_id))
+
+            conn.commit()
+            conn.close()
+
+            flash('Obra atualizada com sucesso!')
+            return redirect(url_for('obras.detalhes_obra', obra_id=obra_id))
+
 @obras_bp.route('/obras/<int:obra_id>/modelo/<int:modelo_id>/instalacoes')
 def visualizar_instalacoes_modelo(obra_id, modelo_id):
     if 'usuario_id' not in session:

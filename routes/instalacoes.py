@@ -236,8 +236,52 @@ def editar_instalacao(instalacao_id):
     return render_template('editar_instalacao.html', instalacao=instalacao, checklist=checklist, fotos=fotos)
 
 
-
-
+@instalacoes_bp.route('/excluir_foto', methods=['POST'])
+def excluir_foto():
+    if 'usuario_id' not in session or session['tipo'] != 'instalador':
+        return redirect(url_for('auth.login'))
+    
+    foto_id = request.form.get('foto_id')
+    usuario_id = session['usuario_id']
+    
+    conn = conectar()
+    with conn.cursor() as cursor:
+        # Verificar se a foto existe e se pertence a uma instalação do usuário
+        cursor.execute('''
+            SELECT fi.caminho, fi.instalacao_id, i.usuario_id
+            FROM fotos_instalacoes fi
+            JOIN instalacoes i ON fi.instalacao_id = i.id
+            WHERE fi.id = %s
+            ''', (foto_id,))
+        foto = cursor.fetchone()
+        
+        if not foto:
+            flash('Foto não encontrada!')
+            return redirect(request.referrer or url_for('instalacoes.obras_instalador'))
+        
+        # Verificar se o usuário tem permissão para excluir (é o dono da instalação)
+        if foto['usuario_id'] != usuario_id:
+            flash('Você não tem permissão para excluir esta foto!')
+            return redirect(request.referrer or url_for('instalacoes.obras_instalador'))
+        
+        # Excluir arquivo físico
+        caminho_arquivo = os.path.join(current_app.config['UPLOAD_FOLDER'], foto['caminho'])
+        if os.path.exists(caminho_arquivo):
+            try:
+                os.remove(caminho_arquivo)
+            except OSError:
+                flash('Erro ao excluir arquivo físico!')
+                return redirect(request.referrer or url_for('instalacoes.obras_instalador'))
+        
+        # Excluir registro do banco
+        cursor.execute('DELETE FROM fotos_instalacoes WHERE id = %s', (foto_id,))
+        conn.commit()
+        
+        flash('Foto excluída com sucesso!')
+        # Redirecionar de volta para a página de edição da instalação
+        return redirect(url_for('instalacoes.editar_instalacao', instalacao_id=foto['instalacao_id']))
+    
+    conn.close()
 
 
 
