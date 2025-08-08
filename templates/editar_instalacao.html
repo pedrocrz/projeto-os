@@ -28,9 +28,36 @@
 
     <h3>Fotos Enviadas</h3>
     {% for foto in fotos %}
-        <p><strong>{{ foto.tipo }}</strong></p>
-        <img src="{{ url_for('static', filename='uploads/' ~ foto.caminho) }}" width="200"><br>
+        <div style="margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+            <p><strong>{{ foto.tipo }}</strong></p>
+            <img src="{{ url_for('static', filename='uploads/' ~ foto.caminho) }}" width="200"><br>
+            <br>
+            <button type="button" onclick="confirmarExclusao({{ foto.id }}, '{{ foto.tipo }}')" 
+                    style="background-color: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
+                Excluir Foto
+            </button>
+        </div>
     {% endfor %}
+
+    <script>
+    function confirmarExclusao(fotoId, tipoFoto) {
+        if (confirm('Tem certeza que deseja excluir a foto "' + tipoFoto + '"? Esta ação não pode ser desfeita.')) {
+            // Criar form para envio POST
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ url_for("instalacoes.excluir_foto") }}';
+            
+            var inputFotoId = document.createElement('input');
+            inputFotoId.type = 'hidden';
+            inputFotoId.name = 'foto_id';
+            inputFotoId.value = fotoId;
+            
+            form.appendChild(inputFotoId);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+    </script>
 
     <h4>Enviar novas Fotos (Opcional)</h4>
     {% set tipos_foto = ['Etiqueta Evaporadora', 'Etiqueta Condensadora', 'Controle Remoto', 'Tubulação', 'Outras'] %}

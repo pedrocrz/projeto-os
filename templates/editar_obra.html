@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title%}Editar Obra{% endblock %} 
+{% block content %}
+
+<h2>Editar Obra</h2>
+
+<form method="POST">
+    <label>Número do Empenho</label><br>
+    <input type="text" name="numero_empenho" value="{{ obra.numero_empenho }}" required><br><br>
+
+    <label>Nome da Obra</label><br>
+    <input type="text" name="nome" value="{{ obra.nome }}" required><br><br>
+
+    <label>Endereço</label><br>
+    <input type="text" name="endereco" value="{{ obra.endereco }}" required><br><br>
+
+    <label>Cidade</label><br>
+    <input type="text" name="cidade" value="{{ obra.cidade }}" required><br><br>
+
+    <label>Estado</label><br>
+    <input type="text" name="estado" value="{{ obra.estado }}" maxlength="2" required><br><br>
+
+    <label for="instaladores">Instaladores Responsáveis:</label><br>
+    <select name="instaladores" multiple class="form-control" style="height: 100px; width: 300px;">
+        {% for instalador in instaladores %}
+            <option value="{{ instalador.id }}" 
+                {% if instalador.id in instaladores_obra %}selected{% endif %}>
+                {{ instalador.nome }}
+            </option>
+        {% endfor %}
+    </select><br>
+    <small>Segure CTRL para selecionar mais de um.</small>
+    <br><br>
+
+    <label>Observações</label><br>
+    <textarea name="observacoes" rows="4" cols="50">{{ obra.observacoes or '' }}</textarea><br><br>
+
+    <input type="submit" value="Salvar Alterações">
+    <a href="{{ url_for('obras.detalhes_obra', obra_id=obra.id) }}">Cancelar</a>
+</form>
+
+{% endblock %}
